@@ -1,48 +1,46 @@
-import tensorflow as tf
-
-# import matplotlib.pyplot as plt
-import matplotlib
-
-matplotlib.use("TkAgg")  # Use the Tkinter-based backend
-import matplotlib.pyplot as plt
-import time
-import pandas as pd
-import numpy as np
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from keras.layers import Conv1D, Bidirectional, LSTM, Dense, Input, Dropout
-from keras.layers import SpatialDropout1D
-from keras.callbacks import ModelCheckpoint
-
-from keras.optimizers import Adam
-from keras.callbacks import ReduceLROnPlateau
-
 import itertools
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
+import re
+import time
 
-
+import matplotlib
+import matplotlib.pyplot as plt
 import nltk
-
-nltk.download("stopwords")
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from keras.callbacks import ReduceLROnPlateau
+from keras.layers import (
+    LSTM,
+    Bidirectional,
+    Conv1D,
+    Dense,
+    Dropout,
+    Input,
+    SpatialDropout1D,
+)
+from keras.optimizers import Adam
+from keras.preprocessing.sequence import pad_sequences
+from keras.preprocessing.text import Tokenizer
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
-
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-import re
 
+from src.env_variable_settings import (
+    BATCH_SIZE,
+    EMBEDDING_DIM,
+    EPOCHS,
+    GLOVE_EMB,
+    LR,
+    MAX_SEQUENCE_LENGTH,
+    TRAIN_SIZE,
+)
+
+matplotlib.use("TkAgg")
+nltk.download("stopwords")
 # Print Tensorflow version
 print("Tensorflow Version", tf.__version__)
-
-from settings import (
-    TRAIN_SIZE,
-    MAX_SEQUENCE_LENGTH,
-    GLOVE_EMB,
-    EMBEDDING_DIM,
-    LR,
-    BATCH_SIZE,
-    EPOCHS,
-)
 
 
 def label_decoder(label):
@@ -53,7 +51,6 @@ def label_decoder(label):
 def load_data_and_preprocess():
     # Load the data
     df = pd.read_csv("training_data.csv", encoding="latin", header=None)
-    df = df[:1000]
     df.columns = ["sentiment", "id", "date", "query", "user_id", "text"]
     df = df.drop(["id", "date", "query", "user_id"], axis=1)
     df.sentiment = df.sentiment.apply(lambda x: label_decoder(x))
@@ -63,7 +60,7 @@ def load_data_and_preprocess():
 def preprocess(text, stem=False):
     stop_words = stopwords.words("english")
     stemmer = SnowballStemmer("english")
-    text_cleaning_re = "@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+"
+    text_cleaning_re = r"@\S+|https?://\S+|http?://\S+|[^A-Za-z0-9]+"
     text = re.sub(text_cleaning_re, " ", str(text).lower()).strip()
     tokens = []
     for token in text.split():
@@ -111,8 +108,6 @@ def perform_tokenizer(train_data, test_data):
 
 
 def perform_label_encoder(train_data, test_data):
-    labels = train_data.sentiment.unique().tolist()
-
     encoder = LabelEncoder()
     encoder.fit(train_data.sentiment.to_list())
 
