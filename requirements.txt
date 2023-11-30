@@ -1,0 +1,7 @@
+tensorflow==2.13.1
+matplotlib
+pandas
+nltk
+scikit-learn
+wordcloud
+tkinter
