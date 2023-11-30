@@ -36,9 +36,7 @@ RUN unzip /tmp/dataset/sentiment140.zip -d /tmp/dataset/
 # Display files in the /home/site/wwwroot folder
 RUN ls /tmp/dataset/
 
-
 # Set environment variables, if needed
-
 WORKDIR /home/site/wwwroot
 # 
 COPY src/Model_notebook.py /home/site/wwwroot/
