@@ -50,7 +50,7 @@ def label_decoder(label):
 
 def load_data_and_preprocess():
     # Load the data
-    df = pd.read_csv("training_data.csv", encoding="latin", header=None)
+    df = pd.read_csv("/tmp/dataset/training.1600000.processed.noemoticon.csv", encoding="latin", header=None)
     df.columns = ["sentiment", "id", "date", "query", "user_id", "text"]
     df = df.drop(["id", "date", "query", "user_id"], axis=1)
     df.sentiment = df.sentiment.apply(lambda x: label_decoder(x))

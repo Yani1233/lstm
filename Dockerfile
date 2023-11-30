@@ -24,11 +24,14 @@ COPY . /home/site/wwwroot
 RUN wget http://nlp.stanford.edu/data/glove.6B.zip -O /tmp/glove_embeddings.zip && \
     unzip /tmp/glove_embeddings.zip -d /tmp/glove_embeddings
 
-RUN ls /tmp/glove_embeddings/
+# RUN ls /tmp/glove_embeddings/
+RUN pip install kaggle
 
-# Download dataset
-RUN wget -O /tmp/dataset/ \
-    https://www.kaggle.com/datasets/kazanova/sentiment140?select=training.1600000.processed.noemoticon.csv
+COPY kaggle.json /root/.kaggle/
+
+RUN kaggle datasets download kazanova/sentiment140 -p /tmp/dataset/
+
+RUN unzip /tmp/dataset/sentiment140.zip -d /tmp/dataset/
 
 # Display files in the /home/site/wwwroot folder
 RUN ls /tmp/dataset/
@@ -36,12 +39,13 @@ RUN ls /tmp/dataset/
 
 # Set environment variables, if needed
 
-# WORKDIR /home/site/wwwroot
+WORKDIR /home/site/wwwroot
+# 
+COPY src/Model_notebook.py /home/site/wwwroot/
 
-# COPY Model_notebook.py /home/site/wwwroot/
+COPY src/env_variable_settings.py /home/site/wwwroot/
 
-# COPY settings.py /home/site/wwwroot/
+CMD ["python", "Model_notebook.py"]
 
-# ENV TERM xterm
+ENV TERM xterm
 
-# CMD ["python", "Model_notebook.py"]
