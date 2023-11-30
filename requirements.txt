@@ -4,4 +4,3 @@ pandas
 nltk
 scikit-learn
 wordcloud
-tkinter

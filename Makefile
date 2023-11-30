@@ -8,7 +8,7 @@ all: help
 # Define a variable for the test file path.
 TEST_FILES ?= tests/
 coverage test tests: TEST_FILES=tests/
-coverage_diff test_diff tests_diff: TEST_FILES=$(shell git diff --name-only --diff-filter=d develop | grep -E 'tests/.*\.py$$')
+coverage_diff test_diff tests_diff: TEST_FILES=$(shell git diff --name-only --diff-filter=d main | grep -E 'tests/.*\.py$$')
 
 # Run unit tests and generate a coverage report.
 coverage:
@@ -39,7 +39,7 @@ test_diff tests_diff:
 # Define a variable for Python and notebook files.
 PYTHON_FILES=.
 lint format: PYTHON_FILES=.
-lint_diff format_diff spell_check_diff spell_fix_diff: PYTHON_FILES=$(shell git diff --name-only --diff-filter=d develop | grep -E '\.py$$|\.ipynb$$')
+lint_diff format_diff spell_check_diff spell_fix_diff: PYTHON_FILES=$(shell git diff --name-only --diff-filter=d main | grep -E '\.py$$|\.ipynb$$')
 
 lint lint_diff:
 	[ "$(PYTHON_FILES)" = "" ] || flake8 $(PYTHON_FILES)
